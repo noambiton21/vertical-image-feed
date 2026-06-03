@@ -11,7 +11,8 @@ interface LikeButtonProps {
 export function LikeButton({ liked, onToggle, dark = false }: LikeButtonProps) {
   const [popKey, setPopKey] = useState(0);
 
-  function handleClick() {
+  function handleClick(event: React.MouseEvent) {
+    event.stopPropagation();
     if (!liked) setPopKey((key) => key + 1);
     onToggle();
   }

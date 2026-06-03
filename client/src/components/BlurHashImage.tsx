@@ -22,6 +22,7 @@ export function BlurHashImage({ src, blurHash, alt }: BlurHashImageProps) {
         ref={imgRef}
         src={src}
         alt={alt}
+        loading="lazy"
         draggable={false}
         onLoad={onLoad}
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${

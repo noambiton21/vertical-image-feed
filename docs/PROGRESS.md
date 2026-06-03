@@ -14,8 +14,8 @@ Status: ✅ Done · 🟡 In Progress · ⬜ Not Started.
 | 5   | Infinite pagination         | ✅ Done                    | 9a40247 |
 | 6   | States + polish             | ✅ Done                    | ef4a8b2 |
 | 7   | Likes wired                 | ✅ Done                    | 3d6cabf |
-| 8   | Accessibility               | 🟡 Built — awaiting commit | —      |
-| 9   | Stretch                     | ⬜ Not Started             | —      |
+| 8   | Accessibility               | ✅ Done                    | 2313616 |
+| 9   | Stretch                     | 🟡 Built — awaiting commit | —      |
 | 10  | Docs + QA                   | ⬜ Not Started             | —      |
 
 ---
@@ -341,7 +341,7 @@ changes.
 
 **Commit:** `feat(client): keyboard navigation and accessibility for feed and likes`
 
-- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Status:** ✅ Done · **Hash:** `2313616`
 - **Verified (build + live):** server `tsc` + client `tsc --noEmit` + `vite build` all clean;
   Prettier clean across client and server; no `any`; no new comments. Live: the feed DTO now carries
   a real `description` from Unsplash — `"Woman working at a desk in a cozy home office."` — so the
@@ -380,7 +380,48 @@ changes.
 
 **Commit:** `feat(client): next-image preloading and double-tap heart-burst (stretch)`
 
-- **Status:** ⬜ Not Started
+- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Verified (build + live, incl. preload in the Network tab):** `tsc --noEmit` + `vite build` clean;
+  Prettier clean; no `any`; no comments. `burstHeart` keyframe + `animate-burstHeart` utility now emit
+  in the built CSS (tree-shaken before — nothing used them until this phase). **Preload confirmed
+  working in DevTools:** on first load at 430px the Network/Img tab shows the visible slide's `<img>`
+  (initiator `Other`) **plus exactly 2** jpeg requests whose initiator is `usePreloadNext.ts` — i.e.
+  the next 2 images warm the cache ahead of the user, matching `PRELOAD_AHEAD = 2`. Before adding
+  `loading="lazy"` (see below) the tab showed all 8 page-1 images loading eagerly; after, only the
+  visible one + the 2 preloaded. **Still not touch-tested** — the double-tap → burst (and that it
+  never unlikes) needs a real touch/browser pass (no headless driver); flagged for manual QA.
+- **Both stretch goals shipped** (the assignment says pick one or two; the core was solid, so both).
+- **Smart preloading:** `hooks/usePreloadNext` — on `currentIndex` change it `new Image().src`-es the
+  next `PRELOAD_AHEAD = 2` photos so their bytes are warming the browser cache before the user
+  arrives, killing the blurhash-then-pop on a normal scroll. A `Set` of already-preloaded URLs makes
+  it idempotent (no duplicate `Image()` per slide; the `Set` grows over a long session — consistent
+  with the documented no-virtualization scope). This is **distinct from** the Phase-5 pagination
+  lookahead (`SENTINEL_LOOKAHEAD_SLIDES`, which fetches the next *data page* early) — preloading is
+  about image *bytes*, pagination is about *data*. To drive it, `Feed`'s `onScroll` (the
+  rAF-throttled `useCurrentSlide`) is now wired for **all** layouts, not just the column ones, so the
+  current index tracks on mobile too; `isColumn` is gone (it only gated `onScroll`).
+- **`loading="lazy"` on the slide `<img>` (the key fix that makes preload meaningful):** every
+  `PhotoSlide` mounts at once (the feed stacks the whole page in one scroll container), so without
+  lazy loading the browser eagerly fetched **all** mounted slide images up front — making
+  `usePreloadNext` redundant. Adding `loading="lazy"` to the `BlurHashImage` `<img>` defers off-screen
+  slides, so the lazy boundary + the 2-ahead warm now compose: the DOM loads the visible slide, the
+  hook warms the next 2 (same `photo.url`, shared cache entry), and fast scroll stays ahead of the
+  blank-frame. Verified via the Network initiator column as above.
+- **Double-tap to like:** `hooks/useDoubleTap` (two taps within `DOUBLE_TAP_WINDOW_MS = 300`) on the
+  `PhotoSlide` body → likes the photo and replays a big coral `HeartBurst` (`burstHeart` keyframe,
+  `HEART_BURST_SIZE = 120`). **Idempotent — only ever likes, never unlikes:** the handler calls the
+  like only when `!liked` (so a double-tap on an already-liked photo just re-plays the burst), and it
+  goes through the same `useToggleLike` mutation via a new `onLike` (target `liked: true`) — so it
+  inherits Phase 7's optimistic flip, rollback, and serialization for free. The in-slide `LikeButton`
+  keeps its own single-tap toggle and now `stopPropagation`s so a heart tap doesn't also feed the
+  slide's double-tap counter. The burst is keyed (`key={burstKey}`) so each double-tap remounts and
+  replays; it's `aria-hidden` (decorative).
+- **Backdrop now uses the blur_hash, not a fetched image (perf):** the tablet/desktop `FeedBackdrop`
+  previously fetched a 64px image of the current photo and blurred it. It now decodes the photo's
+  already-in-memory `blur_hash` (via the same pure `blurHashToDataUrl`) and blurs that — **one fewer
+  network request per desktop photo viewed**, instant + in sync with the slide's own placeholder, and
+  visually identical under `blur(38px)` + the veil. Null hash → solid `bg` under the veil. This made
+  `BACKDROP_IMAGE_WIDTH` and the whole `lib/imageUrl.ts` (`withWidth`) dead code — both **deleted**.
 
 ---
 

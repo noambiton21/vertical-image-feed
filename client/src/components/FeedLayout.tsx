@@ -32,7 +32,7 @@ export function FeedLayout({
 
   return (
     <div className="relative flex h-[100dvh] w-full items-center justify-center overflow-hidden bg-bg">
-      <FeedBackdrop url={current.url} />
+      <FeedBackdrop blurHash={current.blurHash} />
 
       <div
         className="relative h-[calc(100%-44px)] overflow-hidden rounded-[30px] bg-bg shadow-[0_30px_90px_rgba(0,0,0,.6),0_0_0_1px_rgba(255,255,255,.06)]"
