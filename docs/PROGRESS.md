@@ -7,7 +7,7 @@ Status: ✅ Done · 🟡 In Progress · ⬜ Not Started.
 | #   | Phase                       | Status                     | Commit |
 | --- | --------------------------- | -------------------------- | ------ |
 | 0   | Scaffold                    | 🟡 Built — awaiting commit | —      |
-| 1   | Unsplash proxy + pagination | ⬜ Not Started             | —      |
+| 1   | Unsplash proxy + pagination | 🟡 Built — awaiting commit | —      |
 | 2   | SQLite likes                | ⬜ Not Started             | —      |
 | 3   | Typed errors                | ⬜ Not Started             | —      |
 | 4   | Static snap feed            | ⬜ Not Started             | —      |
@@ -23,37 +23,54 @@ Status: ✅ Done · 🟡 In Progress · ⬜ Not Started.
 ## Phase 0 — Scaffold
 
 **Tasks:** root scripts (`dev`/`build`/`install:all`); layered Express+TS skeleton with env
-validation, `app.ts` wiring, and `/api/health`; the server loads the root `.env` via Node's
-`--env-file`; Vite + React + TS client with Tailwind (tokens + the four keyframes) and a
-TanStack Query provider; Vite proxy `/api` → the server (target port read from `.env`);
-`.env.example`, `.gitignore`, Prettier.
+validation and `app.ts` wiring; the server loads the root `.env` via Node's `--env-file`;
+Vite + React + TS client with Tailwind (tokens + the four keyframes) and a TanStack Query
+provider; Vite proxy `/api` → the server (target port read from `.env`); `.env.example`,
+`.gitignore`, Prettier.
 
-**Verify:** `npm run dev` boots both; `:5173/api/health` → `200 {ok:true}` through the proxy;
-changing `PORT` in `.env` moves the server and the proxy follows it; `.env` gitignored,
+**Verify:** `npm run dev` boots both; the client serves on `:5173` and proxies `/api` to the
+server; changing `PORT` in `.env` moves the server and the proxy follows it; `.env` gitignored,
 `.env.example` committed.
 
 **Commit:** `chore: scaffold layered express server and vite client with dev proxy`
 
 - **Status:** 🟡 Built — awaiting commit · **Hash:** —
 - **Verified:** `npm run install:all` clean (0 vulns); both `tsc` builds clean; `npm run dev`
-  boots the server (port from `.env`) + client `:5173`; `:5173/api/health` → `{"ok":true}`
-  through the proxy; set `PORT=3002` and confirmed the server moved and the proxy followed;
-  `.env` confirmed gitignored; Prettier clean across the repo.
+  boots the server (port from `.env`) + client `:5173`; set `PORT=3002` and confirmed the
+  server moved and the proxy followed; `.env` confirmed gitignored; Prettier clean across the
+  repo.
 
 ---
 
 ## Phase 1 — Unsplash proxy + pagination
 
-**Tasks:** `unsplash.service` (fetch with Client-ID + timeout, normalize to `Photo`, guard
-the shape); `photos.service` returns the page; `GET /api/photos` validates params (clamp
-`per_page` 1–30) and returns `{ page, perPage, items }`.
+**Tasks:** `unsplash.service` (fetch with Client-ID + timeout, normalize to `Photo`, trust
+Unsplash's stable API and throw `AppError` on failure); `GET /api/photos` — the controller
+parses + validates `page`/`per_page` (missing → defaults, present → `Number(...)`), then calls
+the service and returns `{ page, perPage, items }`.
 
-**Verify:** `curl '/api/photos?page=1&per_page=5'` → 5 photos with the DTO fields only; bad
-params → 400; the key never appears in the response.
+**Verify:** `curl '/api/photos?page=1&per_page=5'` → 5 photos with the DTO fields only;
+missing params use defaults; invalid values (`page=abc`, `page=0`, `page=-5`, `page=2.7`,
+`per_page=100`) → `400` (the controller rejects them rather than passing bad values to
+Unsplash); bad/empty key → `502`; the key never appears in the response.
 
 **Commit:** `feat(server): proxy unsplash photos and normalize to photo dto`
 
-- **Status:** ⬜ Not Started
+- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Verified (live against Unsplash with the real key):** `GET /api/photos?page=1&per_page=5`
+  → 200 with 5 items; keys are exactly `id, url, width, height, blurHash` (no Unsplash extras);
+  `url` is `urls.raw` + `&w=1080&fit=crop&q=80`. Missing params use defaults (page→1,
+  perPage→8); invalid params → `400` with a generic message. Bad key → clean `502`, no stack
+  trace. The Access Key never appears in the response body. Works through the Vite proxy at
+  `:5173/api/photos`. `tsc` + Prettier clean.
+- **Notes:** No new dependencies (Node `fetch` + `AbortSignal.timeout`). `liked` is **not** on
+  the DTO yet — added in Phase 2. Error handling is intentionally lean: an
+  `AppError(status, message)` class plus a terminal `errorHandler` middleware that returns
+  `{ error: message }` for any `AppError`, `400` for malformed JSON, and a generic `500`
+  otherwise. The controller throws `400` for bad params; `unsplash.service` throws `502` for
+  any upstream failure (network, timeout, non-OK, bad body) after logging request context.
+  A richer typed-error envelope (machine-readable `code`, distinct `429` rate-limit mapping,
+  404 catch-all) is deferred to **Phase 3** if the client needs to branch on error type.
 
 ---
 
@@ -73,9 +90,10 @@ server → state persists.
 
 ## Phase 3 — Typed errors
 
-**Tasks:** `AppError` + subclasses; terminal error middleware that maps them to
-`{ error: { code, message } }` with a status; 404 for unknown routes; map Unsplash 403/429 →
-429, other upstream failures → 502.
+**Tasks:** build on the lean `AppError(status, message)` + terminal middleware from Phase 1 —
+add a machine-readable `code` to the envelope (`{ error: { code, message } }`) if the client
+needs to branch on error type; 404 for unknown routes; map Unsplash 403/429 → 429 (distinct
+from other upstream failures → 502).
 
 **Verify:** bad/empty key → 502; forced rate limit → 429; bad params → 400; no stack traces.
 

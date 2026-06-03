@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import healthRoutes from './health.routes.js';
+import photosRoutes from './photos.routes.js';
 
 const router = Router();
 
-router.use('/health', healthRoutes);
+router.use('/photos', photosRoutes);
 
 export default router;

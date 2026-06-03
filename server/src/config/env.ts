@@ -1,18 +1,12 @@
-import { DEFAULT_PORT } from '../constants.js';
+import { DEFAULT_PORT, DEFAULT_UNSPLASH_BASE_URL } from '../constants.js';
 
-interface Env {
-  port: number;
+const unsplashAccessKey = process.env.UNSPLASH_ACCESS_KEY?.trim();
+if (!unsplashAccessKey) {
+  throw new Error('Missing UNSPLASH_ACCESS_KEY. Copy .env.example to .env and fill it in.');
 }
 
-function parsePort(value: string | undefined): number {
-  if (value === undefined || value.trim() === '') return DEFAULT_PORT;
-  const port = Number(value);
-  if (!Number.isInteger(port) || port <= 0) {
-    throw new Error(`Invalid PORT: "${value}" — expected a positive integer.`);
-  }
-  return port;
-}
-
-export const env: Env = {
-  port: parsePort(process.env.PORT),
+export const env = {
+  port: Number(process.env.PORT) || DEFAULT_PORT,
+  unsplashAccessKey,
+  unsplashBaseUrl: process.env.UNSPLASH_BASE_URL?.trim() || DEFAULT_UNSPLASH_BASE_URL,
 };
