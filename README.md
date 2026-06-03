@@ -43,7 +43,6 @@ npm run dev
 ```
 
 - App: http://localhost:5173
-- Health check: http://localhost:5173/api/health → `{ "ok": true }`
 
 ## How it works
 

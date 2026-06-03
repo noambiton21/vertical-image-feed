@@ -1,3 +1,4 @@
+import type { Response } from 'express';
 import type { ErrorRequestHandler } from 'express';
 import { AppError } from '../errors/AppError.js';
 
@@ -9,17 +10,26 @@ function isJsonParseError(err: unknown): boolean {
   );
 }
 
-export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
+function sendAppError(res: Response, err: AppError): void {
+  res.status(err.status).json({ error: { code: err.code, message: err.message } });
+}
+
+export const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
+  if (res.headersSent) {
+    next(err);
+    return;
+  }
+
   if (err instanceof AppError) {
-    res.status(err.status).json({ error: { code: err.code, message: err.message } });
+    sendAppError(res, err);
     return;
   }
 
   if (isJsonParseError(err)) {
-    res.status(400).json({ error: { code: 'BAD_REQUEST', message: 'Invalid request body.' } });
+    sendAppError(res, AppError.badRequest('Invalid request body.'));
     return;
   }
 
   console.error(err);
-  res.status(500).json({ error: { code: 'INTERNAL', message: 'Something went wrong.' } });
+  sendAppError(res, AppError.internal('Something went wrong.'));
 };
