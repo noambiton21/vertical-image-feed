@@ -15,3 +15,11 @@ body {
   font-family: theme('fontFamily.sans');
   -webkit-font-smoothing: antialiased;
 }
+
+/* Snap feed scrolls but shows no scrollbar (Firefox + WebKit/Chromium). */
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

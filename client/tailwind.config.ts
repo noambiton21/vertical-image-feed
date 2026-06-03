@@ -9,6 +9,10 @@ const config: Config = {
         bg: '#0a0a0c',
         'slide-bg': '#15151a',
       },
+      backgroundImage: {
+        'slide-overlay':
+          'linear-gradient(to bottom, rgba(0,0,0,.42) 0%, transparent 16%, transparent 52%, rgba(0,0,0,.28) 74%, rgba(0,0,0,.82) 100%)',
+      },
       fontFamily: {
         sans: [
           '-apple-system',

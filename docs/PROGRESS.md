@@ -9,8 +9,8 @@ Status: ✅ Done · 🟡 In Progress · ⬜ Not Started.
 | 0   | Scaffold                    | ✅ Done                    | ff514a8 |
 | 1   | Unsplash proxy + pagination | ✅ Done                    | e62f889 |
 | 2   | SQLite likes                | ✅ Done                    | 90f8484 |
-| 3   | Typed errors                | ✅ Done                    | _pending_ |
-| 4   | Static snap feed            | ⬜ Not Started             | —      |
+| 3   | Typed errors                | ✅ Done                    | 2cf3118 |
+| 4   | Static snap feed            | 🟡 Built — awaiting commit | —      |
 | 5   | Infinite pagination         | ⬜ Not Started             | —      |
 | 6   | States + polish             | ⬜ Not Started             | —      |
 | 7   | Likes wired                 | ⬜ Not Started             | —      |
@@ -114,7 +114,7 @@ from other upstream failures → 502).
 
 **Commit:** `feat(server): typed error handling with unsplash rate-limit mapping`
 
-- **Status:** ✅ Done · **Hash:** `_pending_`
+- **Status:** ✅ Done · **Hash:** `2cf3118`
 - **Verified (live):** every error now returns `{ error: { code, message } }`. Unknown route /
   wrong method → `404 NOT_FOUND` (terminal `notFound` middleware before the error handler); bad
   params → `400 BAD_REQUEST` (`page=abc`, `page=0`); malformed JSON body → `400 BAD_REQUEST`.
@@ -142,7 +142,48 @@ scrollbar.
 
 **Commit:** `feat(client): full-bleed snap-scroll feed with like control`
 
-- **Status:** ⬜ Not Started
+- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Verified (build + boot):** `tsc --noEmit` and `vite build` both clean; Prettier clean; no
+  `any` in `src`. Server + client boot; the client serves `200` and the feed loads through the
+  Vite proxy (`/api/photos?page=1&per_page=8` → 8 real Unsplash items, each carrying `liked`).
+  All modules transform without error in dev. Checked the emitted CSS for every Phase-4 visual
+  requirement: `scroll-snap-type: y mandatory`, slide `snap-start` + `snap-always`, `100dvh`
+  height, `object-fit: cover`, the readability gradient, `.hide-scrollbar` (Firefox +
+  WebKit rules), `heartPop` keyframe; the accent `#ff4d6d` is in the JS bundle (it's an SVG
+  fill/stroke attribute, not a class). **Not yet eyeballed in a real viewport** — the snap feel
+  and arrow-key nav at 390px need a browser pass (no headless driver here); flagged for manual QA.
+- **Notes / structure:** `lib/api.ts` is a thin `apiGet` that parses the server's
+  `{ error: { code, message } }` envelope into a typed `ApiError` (so Phase 6's `ErrorState` can
+  branch on `code`). `api/photos.api.ts` exposes `fetchPhotos(page, perPage)`. Data-fetching is
+  owned by a named hook **`hooks/usePhotosFeed`** (not `App`) — it wraps `useQuery` for page 1
+  and returns `{ photos, isLoading, isError }`; Phase 5 swaps its internals to `useInfiniteQuery`
+  without touching `Feed`. `App` is thin (`<Feed/>`). `Feed` owns the snap container + state
+  switching (loading/error/empty via `FeedMessage`) per the plan. Arrow-key nav is extracted to
+  **`hooks/useArrowKeyScroll`**. `PhotoSlide` is full-bleed `100dvh` + gradient; the heart is
+  split into `HeartIcon` (design SVG) + `LikeButton` (real `<button>`, `heartPop` replay).
+  `LikeButton` is **visual only** with local `useState` — server persistence + optimistic toggle
+  are Phase 7; blur_hash, skeleton, and the full empty/error states are Phase 6 (`FeedMessage` is
+  a minimal placeholder for now). Note: `PhotoSlide` seeds `liked` from the prop with
+  `useState(photo.liked)`, which only reads the prop on mount — Phase 7 must **lift** `liked` to
+  the query cache (single source of truth) rather than extend this local state, or the cached
+  flip and the slide's local copy will desync. Colors live **only** in `tailwind.config.ts`; `HeartIcon` is
+  color-agnostic (`currentColor`) and `LikeButton` drives it with `text-accent` / `text-white`,
+  so no hex is duplicated in TS and no separate theme module is needed.
+- **Deviation from the plan tree (flagged):** the plan lists `lib/queryKeys.ts` (a typed
+  query-key factory). With a single query key in Phase 4, a factory would be a single-use
+  abstraction (which the conventions warn against), so `usePhotosFeed` uses an inline
+  `['photos', FIRST_PAGE]` key. The factory earns its place in Phase 5/7 when the feed query and
+  the like mutation must share/​invalidate keys — added then.
+- **Design alignment:** matched the Claude Design handoff (`Vertical Photo Feed.html`). The
+  transcript shows the user pared the mock down to exactly the PRD — photo + single heart +
+  loading/empty/error, no attribution/count/status-bar — so the design intent already matches
+  the plan. Took the design's exact heart SVG (`strokeWidth 1.7`, round caps, `HeartIcon.tsx`),
+  its 5-stop readability gradient (`bg-slide-overlay` token), the `heartPop` replay on like, the
+  transparent hit-area + heart `drop-shadow`, and the `#15151a` slide bg. Design tokens
+  (colors, gradient, keyframes) live **only** in `tailwind.config.ts`; the runtime SVG stays
+  color-agnostic (`currentColor`) and picks up the accent via the `text-accent` class, so no hex
+  is duplicated in TS and no separate theme module is needed. Named sizes live in
+  `src/constants.ts`.
 
 ---
 
