@@ -13,8 +13,8 @@ Status: ✅ Done · 🟡 In Progress · ⬜ Not Started.
 | 4   | Static snap feed            | ✅ Done                    | 5395925 |
 | 5   | Infinite pagination         | ✅ Done                    | 9a40247 |
 | 6   | States + polish             | ✅ Done                    | ef4a8b2 |
-| 7   | Likes wired                 | 🟡 Built — awaiting commit | —      |
-| 8   | Accessibility               | ⬜ Not Started             | —      |
+| 7   | Likes wired                 | ✅ Done                    | 3d6cabf |
+| 8   | Accessibility               | 🟡 Built — awaiting commit | —      |
 | 9   | Stretch                     | ⬜ Not Started             | —      |
 | 10  | Docs + QA                   | ⬜ Not Started             | —      |
 
@@ -288,7 +288,7 @@ server mid-toggle → rollback + error surfaced.
 
 **Commit:** `feat(client): optimistic like toggle with rollback and persistence`
 
-- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Status:** ✅ Done · **Hash:** `3d6cabf`
 - **Verified (build + live):** `tsc --noEmit` and `vite build` clean; Prettier clean; no `any`; no
   comments except one justified `why` (see below). Live through the Vite proxy:
   `PUT /api/photos/:id/like` → `{ id, liked: true }`, `DELETE` → `{ id, liked: false }` (both 200).
@@ -341,7 +341,33 @@ changes.
 
 **Commit:** `feat(client): keyboard navigation and accessibility for feed and likes`
 
-- **Status:** ⬜ Not Started
+- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Verified (build + live):** server `tsc` + client `tsc --noEmit` + `vite build` all clean;
+  Prettier clean across client and server; no `any`; no new comments. Live: the feed DTO now carries
+  a real `description` from Unsplash — `"Woman working at a desk in a cozy home office."` — so the
+  `<img alt>` is genuinely meaningful, not a generic stand-in. Confirmed `aria-pressed`,
+  `Like photo`/`Unlike photo`, the alt fallback, and `aria-hidden` are all in the built JS bundle.
+  **Not yet exercised with a real screen reader / keyboard pass** — VoiceOver announcing the
+  button state and reading the alt, plus tab-to-heart + Enter toggling, need a manual a11y pass
+  (no AT driver here); flagged for QA.
+- **Real alt text (DTO change, end to end):** the plan's "meaningful image `alt`" needed data the
+  DTO didn't have, so this phase adds `description` to the `Photo` DTO. `unsplash.service` maps
+  Unsplash's `alt_description` → `description` (null-safe; it spreads through `photos.service`'s
+  merge and the client mirror untouched). `PhotoSlide` passes `photo.description ?? 'Photo from the
+  feed'` as the `alt` through `BlurHashImage` to the real `<img>` — real description when Unsplash
+  has one, an honest generic fallback when it doesn't (rather than empty, since the photo is the
+  content).
+- **Like button:** already a real `<button>` since Phase 4; this phase adds
+  `aria-label` (`Like photo` / `Unlike photo`) + `aria-pressed={liked}` so AT announces both the
+  action and the toggle state. The heart `<svg>` is `aria-hidden` (the button carries the label).
+- **Decorative layers `aria-hidden`:** audited all non-content layers — the slide readability
+  gradient, the `FeedBackdrop`, the blur_hash placeholder, the IO sentinel, and the `FeedSkeleton`
+  are all `aria-hidden`. The error `Toast` keeps `role="status"` (it *should* be announced).
+- **Already in place:** arrow-key navigation (Phase 4's `useArrowKeyScroll`) — no change needed.
+- **Deliberate deferral (flagged):** `prefers-reduced-motion` from the plan's Phase 8 task list is
+  **not** done this phase, by decision — the heartPop / shimmer / fadeUp / image-fade animations
+  stay on for all users, and arrow-key scroll stays `smooth`. A conscious scope call, not an
+  oversight; tracked as a known next step for a full a11y pass.
 
 ---
 

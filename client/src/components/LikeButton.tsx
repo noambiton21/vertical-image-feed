@@ -24,6 +24,8 @@ export function LikeButton({ liked, onToggle, dark = false }: LikeButtonProps) {
     <button
       type="button"
       onClick={handleClick}
+      aria-label={liked ? 'Unlike photo' : 'Like photo'}
+      aria-pressed={liked}
       className={`flex cursor-pointer items-center justify-center rounded-full border-none transition-transform active:scale-90 ${surface} ${liked ? 'text-accent' : 'text-white'}`}
     >
       <span key={popKey} className={popKey ? 'block animate-heartPop' : 'block'}>

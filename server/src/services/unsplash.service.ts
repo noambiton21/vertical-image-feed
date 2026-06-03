@@ -22,6 +22,7 @@ function toPhoto(raw: UnsplashPhoto): PhotoBase {
     width: raw.width,
     height: raw.height,
     blurHash: raw.blur_hash,
+    description: raw.alt_description,
   };
 }
 

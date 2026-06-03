@@ -4,6 +4,7 @@ export interface Photo {
   width: number;
   height: number;
   blurHash: string | null;
+  description: string | null;
   liked: boolean;
 }
 
