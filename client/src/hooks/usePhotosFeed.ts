@@ -2,6 +2,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { fetchPhotos } from '../api/photos.api.js';
 import { FIRST_PAGE } from '../constants.js';
 import { queryKeys } from '../lib/queryKeys.js';
+import { ApiError } from '../lib/api.js';
 
 export function usePhotosFeed() {
   const query = useInfiniteQuery({
@@ -16,6 +17,8 @@ export function usePhotosFeed() {
     photos: query.data?.pages.flatMap((page) => page.items) ?? [],
     isLoading: query.isPending,
     isError: query.isError,
+    errorCode: query.error instanceof ApiError ? query.error.code : undefined,
+    refetch: query.refetch,
     fetchNextPage: query.fetchNextPage,
     hasNextPage: query.hasNextPage,
     isFetchingNextPage: query.isFetchingNextPage,

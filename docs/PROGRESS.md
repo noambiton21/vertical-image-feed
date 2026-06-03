@@ -11,8 +11,8 @@ Status: ✅ Done · 🟡 In Progress · ⬜ Not Started.
 | 2   | SQLite likes                | ✅ Done                    | 90f8484 |
 | 3   | Typed errors                | ✅ Done                    | 2cf3118 |
 | 4   | Static snap feed            | ✅ Done                    | 5395925 |
-| 5   | Infinite pagination         | 🟡 Built — awaiting commit | —      |
-| 6   | States + polish             | ⬜ Not Started             | —      |
+| 5   | Infinite pagination         | ✅ Done                    | 9a40247 |
+| 6   | States + polish             | 🟡 Built — awaiting commit | —      |
 | 7   | Likes wired                 | ⬜ Not Started             | —      |
 | 8   | Accessibility               | ⬜ Not Started             | —      |
 | 9   | Stretch                     | ⬜ Not Started             | —      |
@@ -197,7 +197,7 @@ page.
 
 **Commit:** `feat(client): infinite feed via useInfiniteQuery and intersection sentinel`
 
-- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Status:** ✅ Done · **Hash:** `9a40247`
 - **Verified (build + boot):** `tsc --noEmit` and `vite build` both clean; Prettier clean; no
   `any` in `src`. Dev server live through the Vite proxy: `GET /api/photos?page=1` and `?page=2`
   both `200` with the exact DTO (`id, url, width, height, blurHash, liked`) and **zero id
@@ -238,7 +238,43 @@ Retry recovers; empty result → empty state; resize 768/1280 → column + backd
 
 **Commit:** `feat(client): blurhash placeholders, skeleton, error/empty, responsive layout`
 
-- **Status:** ⬜ Not Started
+- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Verified (build + boot):** `tsc --noEmit` and `vite build` both clean; Prettier clean; no
+  `any` in `src`; no comments in any new file. Grepped the emitted CSS for every Phase-6 visual:
+  `shimmer` keyframe + `200%` background size, `fadeUp`, the `blur(38px)` backdrop, `snap-mandatory`,
+  `object-cover`, `heartPop` — all present. Dev server live: the feed serves real `blur_hash`
+  strings for every item (`LUI}9P0L%hE1tSWCWBt6V?RjR*j?` …), so the decoder has data to work with.
+  **Not yet eyeballed in a real viewport** — the no-white-flash fade, the resize 768/1280 column +
+  backdrop, and the Retry recovery need a browser/throttle pass (no headless driver here); flagged
+  for manual QA.
+- **Design source:** pulled the Claude Design handoff bundle (`Vertical Photo Feed.html` →
+  `feed.jsx` + `chat1.md`). The transcript is decisive — the user iterated the mock **down** to
+  exactly the PRD (image + heart + loading/empty/error; no attribution, count, status bar, or
+  tabs), so the final design intent already matches the plan. Took the design's exact shimmer
+  gradient, `fadeUp` stagger, the 88px state tiles + their SVGs, the Retry spinner, the ~462px
+  column, and the `blur(38px) brightness(.55) saturate(1.2) scale(1.25)` + `rgba(8,8,11,.45)`
+  backdrop.
+- **Deliberate deviations from the design (flagged):** (1) **Per-image placeholder is blur_hash,
+  not the design's grey shimmer** — the plan chose blur_hash and the real Unsplash DTO already
+  carries it, so `BlurHashImage` decodes it to a data URL and fades the real image in; the design's
+  shimmer is used only for the first-load `FeedSkeleton`. (2) **Empty-state copy is neutral**
+  ("No photos to show / nothing in the feed right now") with **no** "Discover creators" CTA — there
+  is no follow/discover feature, so the social framing was dropped while keeping the design's visual.
+- **Structure:** `lib/blurhash.ts` (new `blurhash` dep, ~3KB) decodes `blur_hash` → canvas →
+  data URL, null-safe. `BlurHashImage` shows the placeholder under an `<img>` that fades in on
+  `onLoad`. `states/FeedSkeleton`, `states/EmptyState`, `states/ErrorState` land; `ErrorState`
+  branches on the `ApiErrorCode` from the envelope (`RATE_LIMITED` → a "busy, try again" message,
+  everything else → the generic copy) and its Retry calls the query's `refetch`. `FeedMessage`
+  (the Phase 4/5 placeholder) is deleted now that the real states exist.
+- **Responsive:** `useBreakpoint` (resize-driven `mobile | tablet | desktop`, named `Breakpoint`
+  consts). `Feed` renders mobile full-bleed (`100dvh`) or, on tablet/desktop, a centered
+  `FEED_COLUMN_WIDTH` column over a `FeedBackdrop` (blurred current photo). Desktop moves the heart
+  just outside the column, driving the **current** slide.
+- **State lift (resolves the Phase 4 caveat):** the per-photo liked flag is no longer local to
+  `PhotoSlide`. `Feed` owns a `likeOverrides` map and `PhotoSlide` is now **controlled**
+  (`liked` + `onToggle` props), so the in-slide heart and the desktop outside-heart share one
+  source of truth and appended pages seed cleanly (`override[id] ?? photo.liked`). This is local
+  state only — Phase 7 swaps the seed + toggle for the query cache + server mutation.
 
 ---
 
