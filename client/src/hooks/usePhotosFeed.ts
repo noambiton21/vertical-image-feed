@@ -13,11 +13,15 @@ export function usePhotosFeed() {
       lastPage.items.length === lastPage.perPage ? lastPage.page + 1 : undefined,
   });
 
+  const errorCode = query.error instanceof ApiError ? query.error.code : undefined;
+  const hasLoadedPages = (query.data?.pages.length ?? 0) > 0;
+
   return {
     photos: query.data?.pages.flatMap((page) => page.items) ?? [],
     isLoading: query.isPending,
     isError: query.isError,
-    errorCode: query.error instanceof ApiError ? query.error.code : undefined,
+    errorCode,
+    nextPageError: query.isError && hasLoadedPages ? errorCode : undefined,
     refetch: query.refetch,
     fetchNextPage: query.fetchNextPage,
     hasNextPage: query.hasNextPage,

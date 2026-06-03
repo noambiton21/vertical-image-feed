@@ -3,12 +3,23 @@ import { blurHashToDataUrl } from '../lib/blurhash.js';
 
 export function useBlurHashImage(src: string, blurHash: string | null) {
   const [loaded, setLoaded] = useState(false);
+  const [errored, setErrored] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
   const placeholder = useMemo(() => blurHashToDataUrl(blurHash), [blurHash]);
 
   useEffect(() => {
-    if (imgRef.current?.complete) setLoaded(true);
+    const img = imgRef.current;
+    if (!img?.complete) return;
+    if (img.naturalWidth > 0) setLoaded(true);
+    else setErrored(true);
   }, [src]);
 
-  return { placeholder, loaded, imgRef, onLoad: () => setLoaded(true) };
+  return {
+    placeholder,
+    loaded,
+    errored,
+    imgRef,
+    onLoad: () => setLoaded(true),
+    onError: () => setErrored(true),
+  };
 }

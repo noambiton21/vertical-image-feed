@@ -7,7 +7,7 @@ interface BlurHashImageProps {
 }
 
 export function BlurHashImage({ src, blurHash, alt }: BlurHashImageProps) {
-  const { placeholder, loaded, imgRef, onLoad } = useBlurHashImage(src, blurHash);
+  const { placeholder, loaded, errored, imgRef, onLoad, onError } = useBlurHashImage(src, blurHash);
 
   return (
     <div className="absolute inset-0 bg-slide-bg">
@@ -25,8 +25,9 @@ export function BlurHashImage({ src, blurHash, alt }: BlurHashImageProps) {
         loading="lazy"
         draggable={false}
         onLoad={onLoad}
+        onError={onError}
         className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-          loaded ? 'opacity-100' : 'opacity-0'
+          loaded && !errored ? 'opacity-100' : 'opacity-0'
         }`}
       />
     </div>

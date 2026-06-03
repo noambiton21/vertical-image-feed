@@ -15,6 +15,7 @@ import { FeedSkeleton } from './states/FeedSkeleton.js';
 import { EmptyState } from './states/EmptyState.js';
 import { ErrorState } from './states/ErrorState.js';
 import { EndOfFeed } from './states/EndOfFeed.js';
+import { MorePhotosError } from './states/MorePhotosError.js';
 
 export function Feed() {
   const {
@@ -22,6 +23,7 @@ export function Feed() {
     isLoading,
     isError,
     errorCode,
+    nextPageError,
     refetch,
     fetchNextPage,
     hasNextPage,
@@ -43,7 +45,7 @@ export function Feed() {
   useIntersection(sentinelRef, {
     root: containerRef,
     rootMargin: `${SENTINEL_LOOKAHEAD_SLIDES * 100}% 0px`,
-    enabled: hasNextPage && !isFetchingNextPage,
+    enabled: hasNextPage && !isFetchingNextPage && !nextPageError,
     onIntersect: fetchNextPage,
   });
 
@@ -69,7 +71,17 @@ export function Feed() {
           showControls={!isDesktop}
         />
       ))}
-      {hasNextPage ? <div ref={sentinelRef} aria-hidden className="h-px w-full" /> : <EndOfFeed />}
+      {nextPageError ? (
+        <MorePhotosError
+          code={nextPageError}
+          retrying={isFetchingNextPage}
+          onRetry={() => fetchNextPage()}
+        />
+      ) : hasNextPage ? (
+        <div ref={sentinelRef} aria-hidden className="h-px w-full" />
+      ) : (
+        <EndOfFeed />
+      )}
     </div>
   );
 
