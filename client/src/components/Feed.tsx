@@ -4,10 +4,12 @@ import { useArrowKeyScroll } from '../hooks/useArrowKeyScroll.js';
 import { useIntersection } from '../hooks/useIntersection.js';
 import { useBreakpoint } from '../hooks/useBreakpoint.js';
 import { useCurrentSlide } from '../hooks/useCurrentSlide.js';
-import { useLikeOverrides } from '../hooks/useLikeOverrides.js';
+import { useToggleLike } from '../hooks/useToggleLike.js';
+import { useToast } from '../hooks/useToast.js';
 import { SENTINEL_LOOKAHEAD_SLIDES } from '../constants.js';
 import { PhotoSlide } from './PhotoSlide.js';
 import { FeedLayout } from './FeedLayout.js';
+import { Toast } from './Toast.js';
 import { FeedSkeleton } from './states/FeedSkeleton.js';
 import { EmptyState } from './states/EmptyState.js';
 import { ErrorState } from './states/ErrorState.js';
@@ -28,7 +30,10 @@ export function Feed() {
   const containerRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const { currentIndex, onScroll } = useCurrentSlide(containerRef, photos.length);
-  const { isLiked, toggleLike } = useLikeOverrides();
+  const toast = useToast();
+  const toggleLike = useToggleLike(() => toast.show('Couldn’t save your like. Try again.'));
+
+  const handleToggle = (id: string, liked: boolean) => toggleLike.mutate({ id, liked: !liked });
 
   useArrowKeyScroll(containerRef);
   useIntersection(sentinelRef, {
@@ -55,8 +60,8 @@ export function Feed() {
         <PhotoSlide
           key={photo.id}
           photo={photo}
-          liked={isLiked(photo.id, photo.liked)}
-          onToggle={() => toggleLike(photo.id, photo.liked)}
+          liked={photo.liked}
+          onToggle={() => handleToggle(photo.id, photo.liked)}
           showControls={!isDesktop}
         />
       ))}
@@ -69,8 +74,9 @@ export function Feed() {
     <FeedLayout
       layout={layout}
       current={current}
-      currentLiked={isLiked(current.id, current.liked)}
-      onToggleCurrent={() => toggleLike(current.id, current.liked)}
+      currentLiked={current.liked}
+      onToggleCurrent={() => handleToggle(current.id, current.liked)}
+      overlay={toast.message ? <Toast message={toast.message} /> : null}
     >
       {scroller}
     </FeedLayout>

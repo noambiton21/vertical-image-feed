@@ -18,3 +18,5 @@ export const Breakpoint = {
 
 export const SHIMMER_GRADIENT = 'linear-gradient(100deg, #15151a 25%, #34343f 50%, #15151a 75%)';
 export const SHIMMER_DURATION = '2.2s';
+
+export const TOAST_DURATION_MS = 2600;

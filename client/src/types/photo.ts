@@ -12,3 +12,8 @@ export interface PhotoPage {
   perPage: number;
   items: Photo[];
 }
+
+export interface LikeResult {
+  id: string;
+  liked: boolean;
+}

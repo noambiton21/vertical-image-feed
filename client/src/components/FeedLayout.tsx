@@ -9,6 +9,7 @@ interface FeedLayoutProps {
   current: Photo;
   currentLiked: boolean;
   onToggleCurrent: () => void;
+  overlay?: React.ReactNode;
   children: React.ReactNode;
 }
 
@@ -17,10 +18,16 @@ export function FeedLayout({
   current,
   currentLiked,
   onToggleCurrent,
+  overlay,
   children,
 }: FeedLayoutProps) {
   if (layout === 'mobile') {
-    return <div className="h-[100dvh] w-full bg-bg">{children}</div>;
+    return (
+      <div className="relative h-[100dvh] w-full overflow-hidden bg-bg">
+        {children}
+        {overlay}
+      </div>
+    );
   }
 
   return (
@@ -42,6 +49,8 @@ export function FeedLayout({
           <LikeButton liked={currentLiked} onToggle={onToggleCurrent} dark />
         </div>
       )}
+
+      {overlay}
     </div>
   );
 }

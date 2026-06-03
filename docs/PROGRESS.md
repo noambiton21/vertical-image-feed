@@ -12,8 +12,8 @@ Status: ✅ Done · 🟡 In Progress · ⬜ Not Started.
 | 3   | Typed errors                | ✅ Done                    | 2cf3118 |
 | 4   | Static snap feed            | ✅ Done                    | 5395925 |
 | 5   | Infinite pagination         | ✅ Done                    | 9a40247 |
-| 6   | States + polish             | 🟡 Built — awaiting commit | —      |
-| 7   | Likes wired                 | ⬜ Not Started             | —      |
+| 6   | States + polish             | ✅ Done                    | ef4a8b2 |
+| 7   | Likes wired                 | 🟡 Built — awaiting commit | —      |
 | 8   | Accessibility               | ⬜ Not Started             | —      |
 | 9   | Stretch                     | ⬜ Not Started             | —      |
 | 10  | Docs + QA                   | ⬜ Not Started             | —      |
@@ -238,7 +238,7 @@ Retry recovers; empty result → empty state; resize 768/1280 → column + backd
 
 **Commit:** `feat(client): blurhash placeholders, skeleton, error/empty, responsive layout`
 
-- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Status:** ✅ Done · **Hash:** `ef4a8b2`
 - **Verified (build + boot):** `tsc --noEmit` and `vite build` both clean; Prettier clean; no
   `any` in `src`; no comments in any new file. Grepped the emitted CSS for every Phase-6 visual:
   `shimmer` keyframe + `200%` background size, `fadeUp`, the `blur(38px)` backdrop, `snap-mandatory`,
@@ -288,7 +288,46 @@ server mid-toggle → rollback + error surfaced.
 
 **Commit:** `feat(client): optimistic like toggle with rollback and persistence`
 
-- **Status:** ⬜ Not Started
+- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Verified (build + live):** `tsc --noEmit` and `vite build` clean; Prettier clean; no `any`; no
+  comments except one justified `why` (see below). Live through the Vite proxy:
+  `PUT /api/photos/:id/like` → `{ id, liked: true }`, `DELETE` → `{ id, liked: false }` (both 200).
+  Liked an id, polled the feed, and it came back `liked: true` from the DB-backed merge → persists
+  across fetches (and, via SQLite from Phase 2, across refresh + server restart). Fired a rapid
+  `PUT PUT DELETE PUT` burst and the server converged to the final intent (`liked: true`), staying
+  consistent (idempotent endpoints). **Not yet eyeballed in a real viewport** — the optimistic feel
+  (instant heart fill, **no scroll jump** since we don't invalidate), the mid-toggle rollback, the
+  error toast, and `heartPop` on tap need a browser pass (no headless driver); flagged for manual QA.
+- **Structure:** all client-side — the like endpoints already existed (Phase 2), so nothing on the
+  server changed. `lib/api.ts` grew a shared `request<T>` that `apiGet` and the new `apiSend`
+  (`PUT`/`DELETE`) both use, so like failures get the same typed `ApiError` envelope the feed
+  already understands. `api/photos.api.ts` adds `likePhoto`/`unlikePhoto`. `lib/flipLikedInPages.ts`
+  is a pure, immutable cache transform (sets `liked` for one id across the `InfiniteData` pages) —
+  in `lib/` not `hooks/` so it's testable without React. `hooks/useToggleLike.ts` is the optimistic
+  mutation; the heart reads `liked` straight from the (now cache-backed) `photo.liked`.
+- **Optimistic flow:** `onMutate` → `cancelQueries` → snapshot the feed cache → `flipLikedInPages`
+  to the target state (instant heart). `onError` → restore the snapshot + surface a toast. **No
+  `onSettled` invalidate** — refetching would reshuffle Unsplash's random order and jump the scroll,
+  so the optimistic cache write *is* the source of truth and a refresh re-hydrates `liked` from the
+  server merge for free.
+- **Spam handling (the real stress case):** two guards. (1) `scope: { id: 'toggle-like' }` makes all
+  like toggles run **serially in tap order**, so rapid mashing reaches the server in order and the
+  last tap wins (no out-of-order DB writes). (2) The rollback only fires when this is the **last
+  toggle still in flight** (`isMutating(...) <= ONLY_THIS_MUTATION`), so a failed mid-burst tap
+  can't clobber a newer queued tap's optimistic state. The single in-code comment explains why that
+  threshold is `1` (the failing mutation is still counted as in-flight inside `onError`) — the one
+  spot where the *why* isn't obvious from the code. No server-side spam logic was added: the
+  endpoints are already idempotent (Phase 2's `ON CONFLICT DO NOTHING` / `DELETE`), and ordering is
+  a client concern (the client knows the user's intent order), so serializing there is the correct,
+  scope-appropriate split rather than version-stamping requests.
+- **Error surface:** a lightweight transient `Toast` (`useToast`, auto-dismiss `TOAST_DURATION_MS`,
+  last-wins so repeated failures don't stack). Rendered via a new `overlay` slot on `FeedLayout` at
+  the screen-level relative container, so it isn't clipped by the column's `overflow-hidden` on
+  tablet/desktop. A failed like reverts the heart + shows the toast **without** tearing down the
+  feed.
+- **Resolves the Phase 4/6 caveat:** `useLikeOverrides` (the temporary local like-state from Phase
+  6) is **deleted** — the query cache is now the single source of truth for `liked`, exactly as the
+  plan intended.
 
 ---
 

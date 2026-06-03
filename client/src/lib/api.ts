@@ -17,10 +17,10 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiGet<T>(path: string): Promise<T> {
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
   try {
-    response = await fetch(path);
+    response = await fetch(path, init);
   } catch {
     throw new ApiError(0, 'INTERNAL', 'Could not reach the server.');
   }
@@ -42,4 +42,12 @@ export async function apiGet<T>(path: string): Promise<T> {
   }
 
   return (await response.json()) as T;
+}
+
+export function apiGet<T>(path: string): Promise<T> {
+  return request<T>(path);
+}
+
+export function apiSend<T>(path: string, method: 'PUT' | 'DELETE'): Promise<T> {
+  return request<T>(path, { method });
 }
