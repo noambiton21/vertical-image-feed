@@ -10,8 +10,8 @@ Status: ✅ Done · 🟡 In Progress · ⬜ Not Started.
 | 1   | Unsplash proxy + pagination | ✅ Done                    | e62f889 |
 | 2   | SQLite likes                | ✅ Done                    | 90f8484 |
 | 3   | Typed errors                | ✅ Done                    | 2cf3118 |
-| 4   | Static snap feed            | 🟡 Built — awaiting commit | —      |
-| 5   | Infinite pagination         | ⬜ Not Started             | —      |
+| 4   | Static snap feed            | ✅ Done                    | 5395925 |
+| 5   | Infinite pagination         | 🟡 Built — awaiting commit | —      |
 | 6   | States + polish             | ⬜ Not Started             | —      |
 | 7   | Likes wired                 | ⬜ Not Started             | —      |
 | 8   | Accessibility               | ⬜ Not Started             | —      |
@@ -142,7 +142,7 @@ scrollbar.
 
 **Commit:** `feat(client): full-bleed snap-scroll feed with like control`
 
-- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Status:** ✅ Done · **Hash:** `5395925`
 - **Verified (build + boot):** `tsc --noEmit` and `vite build` both clean; Prettier clean; no
   `any` in `src`. Server + client boot; the client serves `200` and the feed loads through the
   Vite proxy (`/api/photos?page=1&per_page=8` → 8 real Unsplash items, each carrying `liked`).
@@ -197,7 +197,33 @@ page.
 
 **Commit:** `feat(client): infinite feed via useInfiniteQuery and intersection sentinel`
 
-- **Status:** ⬜ Not Started
+- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Verified (build + boot):** `tsc --noEmit` and `vite build` both clean; Prettier clean; no
+  `any` in `src`. Dev server live through the Vite proxy: `GET /api/photos?page=1` and `?page=2`
+  both `200` with the exact DTO (`id, url, width, height, blurHash, liked`) and **zero id
+  overlap** between the two pages, so the flattened append stacks distinct slides. Page-end logic
+  checked: a full page (`items.length === perPage`) yields a next-page param, a short page yields
+  `undefined` → `EndOfFeed`. **Not yet eyeballed in a real viewport** — the "no scroll jump on
+  append" feel and that the fetch fires ~3 slides early at 390px need a browser pass (no headless
+  driver here); flagged for manual QA, same as Phase 4.
+- **Notes / structure:** `usePhotosFeed` swapped `useQuery` → `useInfiniteQuery`;
+  `getNextPageParam` returns `lastPage.page + 1` while pages are full and `undefined` on a short
+  page (the natural end-of-feed from the plan — Unsplash has no total to use as a cursor). The
+  hook flattens with `pages.flatMap` and exposes `fetchNextPage / hasNextPage /
+  isFetchingNextPage` to the view. `Feed` renders append-only with a stable `key={photo.id}` so
+  the scroll offset never moves, mounts a zero-height `aria-hidden` sentinel as the last child
+  (swapped for `EndOfFeed` once `hasNextPage` is false), and drives it with `useIntersection`.
+  The **duplicate-fetch guard** is `enabled: hasNextPage && !isFetchingNextPage` on the observer,
+  so `fetchNextPage` only fires when there's a page to get and none is in flight.
+- **Lookahead:** the prefetch distance is a named count, `SENTINEL_LOOKAHEAD_SLIDES = 3`
+  (`constants.ts`) — "start loading 3 slides before the end." `Feed` converts it to the IO
+  `rootMargin` (`${n * 100}% 0px`) because the "1 slide = one 100dvh viewport" fact is true here,
+  not in the hook. `useIntersection` stays a **generic** IO hook (takes a `rootMargin` string,
+  knows nothing about slides/feeds) so Phase 9's preload sentinel can reuse it unchanged.
+- **Deviation resolved:** `lib/queryKeys.ts` (deferred in Phase 4 as a single-use abstraction)
+  lands now — the feed query and Phase 7's like mutation will share/invalidate it. Currently a
+  small `const` object (`queryKeys.photosFeed = ['photos', 'feed']`); grows a parameterized
+  helper if/when a second key appears.
 
 ---
 
