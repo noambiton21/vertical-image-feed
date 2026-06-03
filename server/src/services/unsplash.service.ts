@@ -1,9 +1,9 @@
 import { env } from '../config/env.js';
 import { FEED_IMAGE_QUALITY, FEED_IMAGE_WIDTH, UNSPLASH_TIMEOUT_MS } from '../constants.js';
 import { AppError } from '../errors/AppError.js';
-import type { Photo, UnsplashPhoto } from '../types/photo.js';
+import type { PhotoBase, UnsplashPhoto } from '../types/photo.js';
 
-function toPhoto(raw: UnsplashPhoto): Photo {
+function toPhoto(raw: UnsplashPhoto): PhotoBase {
   const url = new URL(raw.urls.raw);
   url.searchParams.set('w', String(FEED_IMAGE_WIDTH));
   url.searchParams.set('fit', 'crop');
@@ -18,7 +18,7 @@ function toPhoto(raw: UnsplashPhoto): Photo {
   };
 }
 
-export async function fetchPhotos(page: number, perPage: number): Promise<Photo[]> {
+export async function fetchPhotos(page: number, perPage: number): Promise<PhotoBase[]> {
   const url = new URL('/photos', env.unsplashBaseUrl);
   url.searchParams.set('page', String(page));
   url.searchParams.set('per_page', String(perPage));

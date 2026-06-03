@@ -243,19 +243,19 @@ These hold for every phase.
 Each phase leaves the app runnable and ends with one commit. Core is 0–8; 9 is the stretch
 work and 10 is docs.
 
-| #   | Outcome                                                                                                                    | Commit                                                                          |
-| --- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| #   | Outcome                                                                                                     | Commit                                                                          |
+| --- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | 0   | Monorepo scaffold: layered Express+TS (env validation) + Vite/React/TS/Tailwind/Query, dev proxy, both boot | `chore: scaffold layered express server and vite client with dev proxy`         |
-| 1   | Unsplash proxy → normalized `Photo` DTO + page-based pagination (no `liked` yet); key server-side                          | `feat(server): proxy unsplash photos and normalize to photo dto`                |
-| 2   | SQLite likes: schema, repo, PUT/DELETE endpoints, merge `liked` into the feed                                              | `feat(server): sqlite likes persistence and liked-flag merge into feed`         |
-| 3   | Typed errors end-to-end (error middleware + 429 rate-limit mapping)                                                        | `feat(server): typed error handling with unsplash rate-limit mapping`           |
-| 4   | Client: full-bleed snap feed on the real first page (snap, arrow keys, gradient, heart)                                    | `feat(client): full-bleed snap-scroll feed with like control`                   |
-| 5   | Infinite pagination via `useInfiniteQuery` + IO sentinel (append-only)                                                     | `feat(client): infinite feed via useInfiniteQuery and intersection sentinel`    |
-| 6   | blur_hash placeholders + shimmer first-load + empty + error(+Retry) + responsive column/backdrop                           | `feat(client): blurhash placeholders, skeleton, error/empty, responsive layout` |
-| 7   | Like wired: optimistic flip + rollback; persists on refresh & restart                                                      | `feat(client): optimistic like toggle with rollback and persistence`            |
-| 8   | A11y pass (real button, aria, alt, keyboard, reduced-motion)                                                               | `feat(client): keyboard navigation and accessibility for feed and likes`        |
-| 9   | Stretch: next-image preloading + double-tap heart-burst                                                                    | `feat(client): next-image preloading and double-tap heart-burst (stretch)`      |
-| 10  | README + AI_WORKFLOW + final QA pass                                                                                       | `docs: readme, ai-workflow, and final qa pass`                                  |
+| 1   | Unsplash proxy → normalized `Photo` DTO + page-based pagination (no `liked` yet); key server-side           | `feat(server): proxy unsplash photos and normalize to photo dto`                |
+| 2   | SQLite likes: schema, repo, PUT/DELETE endpoints, merge `liked` into the feed                               | `feat(server): sqlite likes persistence and liked-flag merge into feed`         |
+| 3   | Typed errors end-to-end (error middleware + 429 rate-limit mapping)                                         | `feat(server): typed error handling with unsplash rate-limit mapping`           |
+| 4   | Client: full-bleed snap feed on the real first page (snap, arrow keys, gradient, heart)                     | `feat(client): full-bleed snap-scroll feed with like control`                   |
+| 5   | Infinite pagination via `useInfiniteQuery` + IO sentinel (append-only)                                      | `feat(client): infinite feed via useInfiniteQuery and intersection sentinel`    |
+| 6   | blur_hash placeholders + shimmer first-load + empty + error(+Retry) + responsive column/backdrop            | `feat(client): blurhash placeholders, skeleton, error/empty, responsive layout` |
+| 7   | Like wired: optimistic flip + rollback; persists on refresh & restart                                       | `feat(client): optimistic like toggle with rollback and persistence`            |
+| 8   | A11y pass (real button, aria, alt, keyboard, reduced-motion)                                                | `feat(client): keyboard navigation and accessibility for feed and likes`        |
+| 9   | Stretch: next-image preloading + double-tap heart-burst                                                     | `feat(client): next-image preloading and double-tap heart-burst (stretch)`      |
+| 10  | README + AI_WORKFLOW + final QA pass                                                                        | `docs: readme, ai-workflow, and final qa pass`                                  |
 
 Per-phase tasks and how I verify each one are tracked in [PROGRESS.md](./PROGRESS.md).
 

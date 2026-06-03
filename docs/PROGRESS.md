@@ -6,9 +6,9 @@ Status: ✅ Done · 🟡 In Progress · ⬜ Not Started.
 
 | #   | Phase                       | Status                     | Commit |
 | --- | --------------------------- | -------------------------- | ------ |
-| 0   | Scaffold                    | 🟡 Built — awaiting commit | —      |
-| 1   | Unsplash proxy + pagination | 🟡 Built — awaiting commit | —      |
-| 2   | SQLite likes                | ⬜ Not Started             | —      |
+| 0   | Scaffold                    | ✅ Done                    | ff514a8 |
+| 1   | Unsplash proxy + pagination | ✅ Done                    | e62f889 |
+| 2   | SQLite likes                | ✅ Done                    | _pending_ |
 | 3   | Typed errors                | ⬜ Not Started             | —      |
 | 4   | Static snap feed            | ⬜ Not Started             | —      |
 | 5   | Infinite pagination         | ⬜ Not Started             | —      |
@@ -34,7 +34,7 @@ server; changing `PORT` in `.env` moves the server and the proxy follows it; `.e
 
 **Commit:** `chore: scaffold layered express server and vite client with dev proxy`
 
-- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Status:** ✅ Done · **Hash:** `ff514a8`
 - **Verified:** `npm run install:all` clean (0 vulns); both `tsc` builds clean; `npm run dev`
   boots the server (port from `.env`) + client `:5173`; set `PORT=3002` and confirmed the
   server moved and the proxy followed; `.env` confirmed gitignored; Prettier clean across the
@@ -56,7 +56,7 @@ Unsplash); bad/empty key → `502`; the key never appears in the response.
 
 **Commit:** `feat(server): proxy unsplash photos and normalize to photo dto`
 
-- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Status:** ✅ Done · **Hash:** `e62f889`
 - **Verified (live against Unsplash with the real key):** `GET /api/photos?page=1&per_page=5`
   → 200 with 5 items; keys are exactly `id, url, width, height, blurHash` (no Unsplash extras);
   `url` is `urls.raw` + `&w=1080&fit=crop&q=80`. Missing params use defaults (page→1,
@@ -84,7 +84,22 @@ server → state persists.
 
 **Commit:** `feat(server): sqlite likes persistence and liked-flag merge into feed`
 
-- **Status:** ⬜ Not Started
+- **Status:** ✅ Done · **Hash:** `_pending_`
+- **Verified (live, fresh DB):** `db/connection.ts` opens better-sqlite3 (WAL) at
+  `data/likes.db`, creating the dir and ensuring the schema on first import (boot). The feed DTO
+  now carries `liked` — keys are exactly `id, url, width, height, blurHash, liked`.
+  `PUT /api/photos/:id/like` → `{ id, liked: true }` and the same id comes back `liked: true`
+  on the next `GET /api/photos`; `DELETE` → `{ id, liked: false }` and the id reads
+  `liked: false` again. `PUT` is idempotent (repeated calls stay `liked: true`, no constraint
+  error — `INSERT ... ON CONFLICT DO NOTHING`). Liked a fixed id, restarted the server, and the
+  row survived (persists across restart). `tsc` + Prettier clean.
+- **Notes:** Layering held — `likes.repo` is the only place SQL lives; `photos.service` does the
+  merge (`liked = likedSet.has(id)`) so `unsplash.service` returns a `PhotoBase` and only the
+  feed service stamps `liked`. `getLikedSet` short-circuits on an empty page and uses a single
+  parameterized `IN (...)`. Likes routes live in `photos.routes.ts` under `/photos/:id/like`
+  (the resource they belong to) rather than a separate router that would duplicate the `:id`
+  path — `likes.routes.ts` from the plan tree was not needed. DB path is overridable via
+  `DB_PATH`; `data/` and `*.db` are already gitignored, so no DB file enters git.
 
 ---
 

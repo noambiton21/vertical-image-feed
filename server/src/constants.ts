@@ -10,3 +10,5 @@ export const FEED_IMAGE_QUALITY = 80;
 
 export const UNSPLASH_TIMEOUT_MS = 8000;
 export const DEFAULT_UNSPLASH_BASE_URL = 'https://api.unsplash.com';
+
+export const DB_PATH = process.env.DB_PATH?.trim() || 'data/likes.db';
