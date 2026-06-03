@@ -8,8 +8,8 @@ Status: ✅ Done · 🟡 In Progress · ⬜ Not Started.
 | --- | --------------------------- | -------------------------- | ------ |
 | 0   | Scaffold                    | ✅ Done                    | ff514a8 |
 | 1   | Unsplash proxy + pagination | ✅ Done                    | e62f889 |
-| 2   | SQLite likes                | ✅ Done                    | _pending_ |
-| 3   | Typed errors                | ⬜ Not Started             | —      |
+| 2   | SQLite likes                | ✅ Done                    | 90f8484 |
+| 3   | Typed errors                | ✅ Done                    | _pending_ |
 | 4   | Static snap feed            | ⬜ Not Started             | —      |
 | 5   | Infinite pagination         | ⬜ Not Started             | —      |
 | 6   | States + polish             | ⬜ Not Started             | —      |
@@ -84,7 +84,7 @@ server → state persists.
 
 **Commit:** `feat(server): sqlite likes persistence and liked-flag merge into feed`
 
-- **Status:** ✅ Done · **Hash:** `_pending_`
+- **Status:** ✅ Done · **Hash:** `90f8484`
 - **Verified (live, fresh DB):** `db/connection.ts` opens better-sqlite3 (WAL) at
   `data/likes.db`, creating the dir and ensuring the schema on first import (boot). The feed DTO
   now carries `liked` — keys are exactly `id, url, width, height, blurHash, liked`.
@@ -114,7 +114,20 @@ from other upstream failures → 502).
 
 **Commit:** `feat(server): typed error handling with unsplash rate-limit mapping`
 
-- **Status:** ⬜ Not Started
+- **Status:** ✅ Done · **Hash:** `_pending_`
+- **Verified (live):** every error now returns `{ error: { code, message } }`. Unknown route /
+  wrong method → `404 NOT_FOUND` (terminal `notFound` middleware before the error handler); bad
+  params → `400 BAD_REQUEST` (`page=abc`, `page=0`); malformed JSON body → `400 BAD_REQUEST`.
+  Against a mock upstream: Unsplash `429` → `429 RATE_LIMITED`, `403` with
+  `X-Ratelimit-Remaining: 0` → `429 RATE_LIMITED`, `403` with quota remaining (bad key) →
+  `502 UPSTREAM_ERROR`, generic `500` → `502 UPSTREAM_ERROR`. Success path against the real key
+  still 200s with the full DTO. No stack traces in any response body. `tsc` + Prettier clean.
+- **Notes:** `AppError` now carries a typed `code: ErrorCode` (`BAD_REQUEST | NOT_FOUND |
+  RATE_LIMITED | UPSTREAM_ERROR | INTERNAL`) defaulted from the status, so existing
+  `throw new AppError(status, msg)` call sites need no change. Rate-limit detection lives in
+  `unsplash.service` (`isRateLimited`) — it distinguishes a quota-exhausted `403` (remaining `0`)
+  from a bad-key `403`, which stays a `502`. The `{ error: { code, message } }` envelope gives
+  the client a stable field to branch on in Phase 6's `ErrorState`.
 
 ---
 

@@ -3,6 +3,13 @@ import { FEED_IMAGE_QUALITY, FEED_IMAGE_WIDTH, UNSPLASH_TIMEOUT_MS } from '../co
 import { AppError } from '../errors/AppError.js';
 import type { PhotoBase, UnsplashPhoto } from '../types/photo.js';
 
+// Unsplash signals a depleted quota with a plain 429, or with a 403 whose
+// `X-Ratelimit-Remaining` header is 0 (distinct from a 403 for a bad key).
+function isRateLimited(response: Response): boolean {
+  if (response.status === 429) return true;
+  return response.status === 403 && response.headers.get('x-ratelimit-remaining') === '0';
+}
+
 function toPhoto(raw: UnsplashPhoto): PhotoBase {
   const url = new URL(raw.urls.raw);
   url.searchParams.set('w', String(FEED_IMAGE_WIDTH));
@@ -30,6 +37,12 @@ export async function fetchPhotos(page: number, perPage: number): Promise<PhotoB
     });
 
     if (!response.ok) {
+      if (isRateLimited(response)) {
+        throw new AppError(
+          429,
+          'The image service is rate-limited right now. Please try again shortly.',
+        );
+      }
       throw new AppError(502, 'Could not load photos from the image service.');
     }
 

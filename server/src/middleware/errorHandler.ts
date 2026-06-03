@@ -11,15 +11,15 @@ function isJsonParseError(err: unknown): boolean {
 
 export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   if (err instanceof AppError) {
-    res.status(err.status).json({ error: err.message });
+    res.status(err.status).json({ error: { code: err.code, message: err.message } });
     return;
   }
 
   if (isJsonParseError(err)) {
-    res.status(400).json({ error: 'Invalid request body.' });
+    res.status(400).json({ error: { code: 'BAD_REQUEST', message: 'Invalid request body.' } });
     return;
   }
 
   console.error(err);
-  res.status(500).json({ error: 'Something went wrong.' });
+  res.status(500).json({ error: { code: 'INTERNAL', message: 'Something went wrong.' } });
 };
