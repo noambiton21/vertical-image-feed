@@ -1,3 +1,5 @@
+
+
 # Vertical Photo Feed
 
 A full-screen, vertically-scrolling, snap-to-photo feed — TikTok/Reels but for photos. One
@@ -13,14 +15,7 @@ phased build, and [AI_WORKFLOW.md](./AI_WORKFLOW.md) for how I used AI tools on 
 
 ## Demo
 
-<!--
-  TODO: drop the screen recording here. Open this README on github.com, edit it, and drag the
-  video file (.mp4 / .mov / .webm, under ~100 MB) onto this line — GitHub uploads it and replaces
-  this comment with its own asset URL, which inline-plays in the rendered README. Show the feel:
-  snap scroll, like, double-tap heart-burst, and an error/empty state.
--->
-
-_Screen recording coming here — drag the video into this section on GitHub (see the comment above)._
+https://github.com/user-attachments/assets/423ca759-a70f-468c-98c4-32659d9571bc
 
 ## Stack
 
