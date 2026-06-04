@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ApiErrorCode } from '../../lib/api.js';
 import { CenteredState } from './CenteredState.js';
 
@@ -7,14 +8,13 @@ interface ErrorStateProps {
   onRetry: () => void;
 }
 
-function messageForCode(code: ApiErrorCode | undefined): string {
-  if (code === 'RATE_LIMITED') {
-    return 'The photo service is busy right now. Give it a moment and try again.';
-  }
-  return 'We’re having trouble reaching the photo service. Check your connection and try again.';
+function messageKeyForCode(code: ApiErrorCode | undefined): string {
+  if (code === 'RATE_LIMITED') return 'errorState.rateLimited';
+  return 'errorState.generic';
 }
 
 export function ErrorState({ code, onRetry }: ErrorStateProps) {
+  const { t } = useTranslation();
   const [spins, setSpins] = useState(0);
 
   function handleRetry() {
@@ -41,10 +41,10 @@ export function ErrorState({ code, onRetry }: ErrorStateProps) {
         </svg>
       </div>
       <div className="mb-[9px] animate-fadeUp text-[21px] font-bold [animation-delay:50ms]">
-        Couldn’t load the feed
+        {t('errorState.title')}
       </div>
       <div className="max-w-[290px] animate-fadeUp text-[15px] leading-normal text-white/60 [animation-delay:100ms]">
-        {messageForCode(code)}
+        {t(messageKeyForCode(code))}
       </div>
       <button
         type="button"
@@ -66,7 +66,7 @@ export function ErrorState({ code, onRetry }: ErrorStateProps) {
           <path d="M21 12a9 9 0 1 1-2.6-6.4" />
           <path d="M21 3v5h-5" />
         </svg>
-        Retry
+        {t('errorState.retry')}
       </button>
     </CenteredState>
   );

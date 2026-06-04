@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import App from './App.js';
 import { queryClient } from './lib/queryClient.js';
+import './lib/i18n.js';
 import './index.css';
 
 const rootElement = document.getElementById('root');

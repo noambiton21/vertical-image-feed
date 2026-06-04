@@ -1,4 +1,5 @@
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePhotosFeed } from '../hooks/usePhotosFeed.js';
 import { useArrowKeyScroll } from '../hooks/useArrowKeyScroll.js';
 import { useIntersection } from '../hooks/useIntersection.js';
@@ -18,6 +19,7 @@ import { EndOfFeed } from './states/EndOfFeed.js';
 import { MorePhotosError } from './states/MorePhotosError.js';
 
 export function Feed() {
+  const { t } = useTranslation();
   const {
     photos,
     isLoading,
@@ -34,7 +36,7 @@ export function Feed() {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const { currentIndex, onScroll } = useCurrentSlide(containerRef, photos.length);
   const toast = useToast();
-  const toggleLike = useToggleLike(() => toast.show('Couldn’t save your like. Try again.'));
+  const toggleLike = useToggleLike(() => toast.show(t('feed.likeError')));
 
   usePreloadNext(photos, currentIndex);
 

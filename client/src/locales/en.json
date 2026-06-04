@@ -1,0 +1,31 @@
+{
+  "feed": {
+    "likeError": "Couldn’t save your like. Try again."
+  },
+  "likeButton": {
+    "like": "Like photo",
+    "unlike": "Unlike photo"
+  },
+  "photo": {
+    "alt": "Photo from the feed"
+  },
+  "emptyState": {
+    "title": "No photos to show",
+    "description": "There’s nothing in the feed right now. Check back in a little while."
+  },
+  "endOfFeed": {
+    "message": "You’re all caught up."
+  },
+  "errorState": {
+    "title": "Couldn’t load the feed",
+    "rateLimited": "The photo service is busy right now. Give it a moment and try again.",
+    "generic": "We’re having trouble reaching the photo service. Check your connection and try again.",
+    "retry": "Retry"
+  },
+  "morePhotosError": {
+    "rateLimited": "The photo service is busy. Give it a moment.",
+    "generic": "Couldn’t load more photos.",
+    "loading": "Loading…",
+    "retry": "Try again"
+  }
+}

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { HEART_ICON_SIZE } from '../constants.js';
 import { HeartIcon } from './HeartIcon.js';
 
@@ -9,6 +10,7 @@ interface LikeButtonProps {
 }
 
 export function LikeButton({ liked, onToggle, dark = false }: LikeButtonProps) {
+  const { t } = useTranslation();
   const [popKey, setPopKey] = useState(0);
 
   function handleClick(event: React.MouseEvent) {
@@ -25,7 +27,7 @@ export function LikeButton({ liked, onToggle, dark = false }: LikeButtonProps) {
     <button
       type="button"
       onClick={handleClick}
-      aria-label={liked ? 'Unlike photo' : 'Like photo'}
+      aria-label={liked ? t('likeButton.unlike') : t('likeButton.like')}
       aria-pressed={liked}
       className={`flex cursor-pointer items-center justify-center rounded-full border-none transition-transform active:scale-90 ${surface} ${liked ? 'text-accent' : 'text-white'}`}
     >

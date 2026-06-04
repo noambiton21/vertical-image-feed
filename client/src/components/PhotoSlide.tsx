@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Photo } from '../types/photo.js';
 import { useDoubleTap } from '../hooks/useDoubleTap.js';
 import { BlurHashImage } from './BlurHashImage.js';
@@ -20,6 +21,7 @@ export function PhotoSlide({
   onLike,
   showControls = true,
 }: PhotoSlideProps) {
+  const { t } = useTranslation();
   const [burstKey, setBurstKey] = useState(0);
 
   const handleDoubleTap = useDoubleTap(() => {
@@ -35,7 +37,7 @@ export function PhotoSlide({
       <BlurHashImage
         src={photo.url}
         blurHash={photo.blurHash}
-        alt={photo.description ?? 'Photo from the feed'}
+        alt={photo.description ?? t('photo.alt')}
       />
 
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-slide-overlay" />

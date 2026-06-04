@@ -1,6 +1,8 @@
+import { useTranslation } from 'react-i18next';
 import { CenteredState } from './CenteredState.js';
 
 export function EmptyState() {
+  const { t } = useTranslation();
   return (
     <CenteredState>
       <div className="mb-[26px] flex h-[88px] w-[88px] animate-fadeUp items-center justify-center rounded-[26px] border-[1.5px] border-white/12 bg-white/5">
@@ -20,10 +22,10 @@ export function EmptyState() {
         </svg>
       </div>
       <div className="mb-[9px] animate-fadeUp text-[21px] font-bold [animation-delay:50ms]">
-        No photos to show
+        {t('emptyState.title')}
       </div>
       <div className="max-w-[280px] animate-fadeUp text-[15px] leading-normal text-white/60 [animation-delay:100ms]">
-        There’s nothing in the feed right now. Check back in a little while.
+        {t('emptyState.description')}
       </div>
     </CenteredState>
   );
