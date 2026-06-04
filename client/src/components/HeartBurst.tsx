@@ -1,5 +1,5 @@
-import { HEART_BURST_SIZE } from '../constants.js';
-import { HeartIcon } from './HeartIcon.js';
+import { HEART_BURST_SIZE } from '../constants';
+import { HeartIcon } from './HeartIcon';
 
 export function HeartBurst() {
   return (

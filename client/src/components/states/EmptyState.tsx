@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { CenteredState } from './CenteredState.js';
+import { CenteredState } from './CenteredState';
 
 export function EmptyState() {
   const { t } = useTranslation();

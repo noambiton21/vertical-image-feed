@@ -1,9 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClientProvider } from '@tanstack/react-query';
-import App from './App.js';
-import { queryClient } from './lib/queryClient.js';
-import './lib/i18n.js';
+import App from './App';
+import { queryClient } from './lib/queryClient';
+import './lib/i18n';
 import './index.css';
 
 const rootElement = document.getElementById('root');

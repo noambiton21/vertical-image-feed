@@ -1,4 +1,4 @@
-import { useBlurHashImage } from '../hooks/useBlurHashImage.js';
+import { useBlurHashImage } from '../hooks/useBlurHashImage';
 
 interface BlurHashImageProps {
   src: string;

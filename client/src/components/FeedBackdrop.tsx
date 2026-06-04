@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { blurHashToDataUrl } from '../lib/blurhash.js';
+import { blurHashToDataUrl } from '../lib/blurhash';
 
 interface FeedBackdropProps {
   blurHash: string | null;

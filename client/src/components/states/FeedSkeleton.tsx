@@ -1,4 +1,4 @@
-import { SHIMMER_GRADIENT, SHIMMER_DURATION } from '../../constants.js';
+import { SHIMMER_GRADIENT, SHIMMER_DURATION } from '../../constants';
 
 export function FeedSkeleton() {
   return (

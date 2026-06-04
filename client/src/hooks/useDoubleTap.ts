@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { DOUBLE_TAP_WINDOW_MS } from '../constants.js';
+import { DOUBLE_TAP_WINDOW_MS } from '../constants';
 
 export function useDoubleTap(onDoubleTap: () => void) {
   const lastTap = useRef(0);

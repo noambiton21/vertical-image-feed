@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Breakpoint } from '../constants.js';
+import { Breakpoint } from '../constants';
 
 export type Layout = 'mobile' | 'tablet' | 'desktop';
 

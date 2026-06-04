@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import type { ApiErrorCode } from '../../lib/api.js';
+import type { ApiErrorCode } from '../../lib/api';
 
 interface MorePhotosErrorProps {
   code?: ApiErrorCode;

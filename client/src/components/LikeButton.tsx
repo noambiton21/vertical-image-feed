@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { HEART_ICON_SIZE } from '../constants.js';
-import { HeartIcon } from './HeartIcon.js';
+import { HEART_ICON_SIZE } from '../constants';
+import { HeartIcon } from './HeartIcon';
 
 interface LikeButtonProps {
   liked: boolean;

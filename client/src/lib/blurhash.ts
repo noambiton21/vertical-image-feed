@@ -1,5 +1,5 @@
 import { decode } from 'blurhash';
-import { BLURHASH_DECODE_SIZE } from '../constants.js';
+import { BLURHASH_DECODE_SIZE } from '../constants';
 
 export function blurHashToDataUrl(hash: string | null): string | null {
   if (!hash) return null;

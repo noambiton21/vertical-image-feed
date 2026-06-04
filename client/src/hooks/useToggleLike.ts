@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient, type InfiniteData } from '@tanstack/react-query';
-import { likePhoto, unlikePhoto } from '../api/photos.api.js';
-import { queryKeys } from '../lib/queryKeys.js';
-import { flipLikedInPages } from '../lib/flipLikedInPages.js';
-import type { PhotoPage } from '../types/photo.js';
+import { likePhoto, unlikePhoto } from '../api/photos.api';
+import { queryKeys } from '../lib/queryKeys';
+import { flipLikedInPages } from '../lib/flipLikedInPages';
+import type { PhotoPage } from '../types/photo';
 
 interface ToggleLikeVars {
   id: string;

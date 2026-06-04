@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Photo } from '../types/photo.js';
-import { useDoubleTap } from '../hooks/useDoubleTap.js';
-import { BlurHashImage } from './BlurHashImage.js';
-import { HeartBurst } from './HeartBurst.js';
-import { LikeButton } from './LikeButton.js';
+import type { Photo } from '../types/photo';
+import { useDoubleTap } from '../hooks/useDoubleTap';
+import { BlurHashImage } from './BlurHashImage';
+import { HeartBurst } from './HeartBurst';
+import { LikeButton } from './LikeButton';
 
 interface PhotoSlideProps {
   photo: Photo;

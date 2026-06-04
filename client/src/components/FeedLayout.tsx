@@ -1,8 +1,8 @@
-import { FEED_COLUMN_WIDTH } from '../constants.js';
-import type { Layout } from '../hooks/useBreakpoint.js';
-import type { Photo } from '../types/photo.js';
-import { FeedBackdrop } from './FeedBackdrop.js';
-import { LikeButton } from './LikeButton.js';
+import { FEED_COLUMN_WIDTH } from '../constants';
+import type { Layout } from '../hooks/useBreakpoint';
+import type { Photo } from '../types/photo';
+import { FeedBackdrop } from './FeedBackdrop';
+import { LikeButton } from './LikeButton';
 
 interface FeedLayoutProps {
   layout: Layout;

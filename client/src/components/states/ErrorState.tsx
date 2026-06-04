@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { ApiErrorCode } from '../../lib/api.js';
-import { CenteredState } from './CenteredState.js';
+import type { ApiErrorCode } from '../../lib/api';
+import { CenteredState } from './CenteredState';
 
 interface ErrorStateProps {
   code?: ApiErrorCode;
