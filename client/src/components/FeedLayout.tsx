@@ -1,4 +1,4 @@
-import { Layout } from '../hooks/useBreakpoint';
+import { Layout } from '../hooks/utils/useBreakpoint';
 import type { Photo } from '../types/photo';
 import { FeedBackdrop } from './FeedBackdrop';
 import { LikeButton } from './LikeButton';

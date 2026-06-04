@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Photo } from '../types/photo';
-import { useDoubleTap } from '../hooks/useDoubleTap';
+import { useDoubleTap } from '../hooks/utils/useDoubleTap';
 import { BlurHashImage } from './BlurHashImage';
 import { HeartBurst } from './HeartBurst';
 import { LikeButton } from './LikeButton';

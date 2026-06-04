@@ -1,8 +1,8 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { fetchPhotos } from '../api/photos.api';
-import { FIRST_PAGE } from '../constants';
-import { queryKeys } from '../lib/queryKeys';
-import { ApiError } from '../lib/api';
+import { fetchPhotos } from '../../api/photos.api';
+import { FIRST_PAGE } from '../../constants';
+import { queryKeys } from '../../lib/queryKeys';
+import { ApiError } from '../../lib/api';
 
 export function usePhotosFeed() {
   const query = useInfiniteQuery({

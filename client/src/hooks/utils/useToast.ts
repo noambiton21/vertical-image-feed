@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { TOAST_DURATION_MS } from '../constants';
+import { TOAST_DURATION_MS } from '../../constants';
 
 export function useToast() {
   const [message, setMessage] = useState<string | null>(null);

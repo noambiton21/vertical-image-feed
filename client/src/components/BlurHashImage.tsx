@@ -1,4 +1,4 @@
-import { useBlurHashImage } from '../hooks/useBlurHashImage';
+import { useBlurHashImage } from '../hooks/utils/useBlurHashImage';
 import { cn } from '../lib/utils';
 
 interface BlurHashImageProps {

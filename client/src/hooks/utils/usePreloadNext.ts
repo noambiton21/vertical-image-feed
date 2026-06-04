@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { PRELOAD_AHEAD } from '../constants';
-import type { Photo } from '../types/photo';
+import { PRELOAD_AHEAD } from '../../constants';
+import type { Photo } from '../../types/photo';
 
 export function usePreloadNext(photos: Photo[], currentIndex: number) {
   const preloaded = useRef<Set<string>>(new Set());

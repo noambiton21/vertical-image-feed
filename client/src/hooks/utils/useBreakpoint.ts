@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Breakpoint } from '../constants';
+import { Breakpoint } from '../../constants';
 
 export enum Layout {
   Mobile = 'mobile',

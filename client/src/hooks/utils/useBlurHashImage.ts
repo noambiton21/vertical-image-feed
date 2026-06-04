@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { blurHashToDataUrl } from '../lib/blurhash';
+import { blurHashToDataUrl } from '../../lib/blurhash';
 
 export function useBlurHashImage(src: string, blurHash: string | null) {
   const [loaded, setLoaded] = useState(false);
