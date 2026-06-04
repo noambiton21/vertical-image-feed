@@ -9,7 +9,18 @@ Express + TypeScript + SQLite on the server. Photos come from Unsplash, proxied 
 server so the API key stays off the client.
 
 See [docs/IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md) for the design and the
-phased build.
+phased build, and [AI_WORKFLOW.md](./AI_WORKFLOW.md) for how I used AI tools on it.
+
+## Demo
+
+<!--
+  TODO: drop the screen recording here. Open this README on github.com, edit it, and drag the
+  video file (.mp4 / .mov / .webm, under ~100 MB) onto this line — GitHub uploads it and replaces
+  this comment with its own asset URL, which inline-plays in the rendered README. Show the feel:
+  snap scroll, like, double-tap heart-burst, and an error/empty state.
+-->
+
+_Screen recording coming here — drag the video into this section on GitHub (see the comment above)._
 
 ## Stack
 

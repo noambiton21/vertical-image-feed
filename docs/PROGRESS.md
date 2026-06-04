@@ -15,8 +15,8 @@ Status: ✅ Done · 🟡 In Progress · ⬜ Not Started.
 | 6   | States + polish             | ✅ Done                    | ef4a8b2 |
 | 7   | Likes wired                 | ✅ Done                    | 3d6cabf |
 | 8   | Accessibility               | ✅ Done                    | 2313616 |
-| 9   | Stretch                     | 🟡 Built — awaiting commit | —      |
-| 10  | Docs + QA                   | ⬜ Not Started             | —      |
+| 9   | Stretch                     | ✅ Done                    | 74f4adc |
+| 10  | Docs + QA                   | 🟡 Built — awaiting commit | —      |
 
 ---
 
@@ -380,7 +380,7 @@ changes.
 
 **Commit:** `feat(client): next-image preloading and double-tap heart-burst (stretch)`
 
-- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Status:** ✅ Done · **Hash:** `74f4adc`
 - **Verified (build + live, incl. preload in the Network tab):** `tsc --noEmit` + `vite build` clean;
   Prettier clean; no `any`; no comments. `burstHeart` keyframe + `animate-burstHeart` utility now emit
   in the built CSS (tree-shaken before — nothing used them until this phase). **Preload confirmed
@@ -434,4 +434,17 @@ QA on a narrow viewport; confirm no secrets / `*.db` in git; fresh-clone boot wo
 
 **Commit:** `docs: readme, ai-workflow, and final qa pass`
 
-- **Status:** ⬜ Not Started
+- **Status:** 🟡 Built — awaiting commit · **Hash:** —
+- **Done:** `AI_WORKFLOW.md` (repo root) written from the real session prompts (incl. the preload miss I
+  caught via the Network tab and the misplaced `main.tsx` fix I pushed back on). README gained a
+  **Demo** section with a drag-in spot for the screen recording and a link to AI_WORKFLOW.
+- **QA passed:** `npm run build` clean (server `tsc` + client `tsc -b`/`vite build`); no secrets or
+  `*.db` tracked (`git ls-files` clean), `.env` + `server/data/` + `*.db` all gitignored, and the
+  Unsplash key appears in **no** tracked file and **no** git-history blob. README setup steps match
+  the actual scripts.
+- **Still on me (needs the live app + my key):** record the screen capture and drag it into the
+  README Demo section on GitHub; do the final narrow-viewport eyeball pass (the items flagged
+  "not yet eyeballed" in Phases 4–9); confirm a fresh `git clone` → `npm run install:all` →
+  `cp .env.example .env` + key → `npm run dev` boots both apps.
+- **Note:** two pre-existing Prettier warnings (`docs/PROGRESS.md`, `unsplash.service.ts`) from
+  earlier phases — left untouched here; fold into a format pass before the final commit.
