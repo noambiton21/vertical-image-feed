@@ -31,7 +31,7 @@ export function Feed() {
     hasNextPage,
     isFetchingNextPage,
   } = usePhotosFeed();
-  const layout = useBreakpoint();
+  const { layout, isDesktop } = useBreakpoint();
   const containerRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const { currentIndex, onScroll } = useCurrentSlide(containerRef, photos.length);
@@ -54,8 +54,6 @@ export function Feed() {
   if (isLoading) return <FeedSkeleton />;
   if (isError) return <ErrorState code={errorCode} onRetry={() => refetch()} />;
   if (photos.length === 0) return <EmptyState />;
-
-  const isDesktop = layout === 'desktop';
 
   const scroller = (
     <div

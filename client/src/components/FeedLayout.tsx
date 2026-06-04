@@ -1,4 +1,4 @@
-import type { Layout } from '../hooks/useBreakpoint';
+import { Layout } from '../hooks/useBreakpoint';
 import type { Photo } from '../types/photo';
 import { FeedBackdrop } from './FeedBackdrop';
 import { LikeButton } from './LikeButton';
@@ -20,7 +20,7 @@ export function FeedLayout({
   overlay,
   children,
 }: FeedLayoutProps) {
-  if (layout === 'mobile') {
+  if (layout === Layout.Mobile) {
     return (
       <div className="relative h-[100dvh] w-full overflow-hidden bg-bg">
         {children}
@@ -37,7 +37,7 @@ export function FeedLayout({
         {children}
       </div>
 
-      {layout === 'desktop' && (
+      {layout === Layout.Desktop && (
         <div className="absolute top-1/2 left-[calc(50%+261px)] -translate-y-1/2">
           <LikeButton liked={currentLiked} onToggle={onToggleCurrent} dark />
         </div>
