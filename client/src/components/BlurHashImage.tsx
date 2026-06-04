@@ -1,4 +1,5 @@
 import { useBlurHashImage } from '../hooks/useBlurHashImage';
+import { cn } from '../lib/utils';
 
 interface BlurHashImageProps {
   src: string;
@@ -26,9 +27,10 @@ export function BlurHashImage({ src, blurHash, alt }: BlurHashImageProps) {
         draggable={false}
         onLoad={onLoad}
         onError={onError}
-        className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-          loaded && !errored ? 'opacity-100' : 'opacity-0'
-        }`}
+        className={cn(
+          'absolute inset-0 h-full w-full object-cover transition-opacity duration-500',
+          loaded && !errored ? 'opacity-100' : 'opacity-0',
+        )}
       />
     </div>
   );

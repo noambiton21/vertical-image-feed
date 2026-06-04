@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { HEART_ICON_SIZE } from '../constants';
+import { cn } from '../lib/utils';
 import { HeartIcon } from './HeartIcon';
 
 interface LikeButtonProps {
@@ -19,19 +20,19 @@ export function LikeButton({ liked, onToggle, dark = false }: LikeButtonProps) {
     onToggle();
   }
 
-  const surface = dark
-    ? 'bg-white/6 p-[14px]'
-    : 'bg-transparent p-0 drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]';
-
   return (
     <button
       type="button"
       onClick={handleClick}
       aria-label={liked ? t('likeButton.unlike') : t('likeButton.like')}
       aria-pressed={liked}
-      className={`flex cursor-pointer items-center justify-center rounded-full border-none transition-transform active:scale-90 ${surface} ${liked ? 'text-accent' : 'text-white'}`}
+      className={cn(
+        'flex cursor-pointer items-center justify-center rounded-full border-none transition-transform active:scale-90',
+        dark ? 'bg-white/6 p-[14px]' : 'bg-transparent p-0 drop-shadow-[0_1px_6px_rgba(0,0,0,0.5)]',
+        liked ? 'text-accent' : 'text-white',
+      )}
     >
-      <span key={popKey} className={popKey ? 'block animate-heartPop' : 'block'}>
+      <span key={popKey} className={cn('block', popKey && 'animate-heartPop')}>
         <HeartIcon size={HEART_ICON_SIZE} filled={liked} />
       </span>
     </button>

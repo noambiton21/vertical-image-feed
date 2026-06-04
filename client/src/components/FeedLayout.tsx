@@ -1,4 +1,3 @@
-import { FEED_COLUMN_WIDTH } from '../constants';
 import type { Layout } from '../hooks/useBreakpoint';
 import type { Photo } from '../types/photo';
 import { FeedBackdrop } from './FeedBackdrop';
@@ -34,18 +33,12 @@ export function FeedLayout({
     <div className="relative flex h-[100dvh] w-full items-center justify-center overflow-hidden bg-bg">
       <FeedBackdrop blurHash={current.blurHash} />
 
-      <div
-        className="relative h-[calc(100%-44px)] overflow-hidden rounded-[30px] bg-bg shadow-[0_30px_90px_rgba(0,0,0,.6),0_0_0_1px_rgba(255,255,255,.06)]"
-        style={{ width: FEED_COLUMN_WIDTH }}
-      >
+      <div className="relative h-[calc(100%-44px)] w-[462px] overflow-hidden rounded-[30px] bg-bg shadow-[0_30px_90px_rgba(0,0,0,.6),0_0_0_1px_rgba(255,255,255,.06)]">
         {children}
       </div>
 
       {layout === 'desktop' && (
-        <div
-          className="absolute top-1/2 -translate-y-1/2"
-          style={{ left: `calc(50% + ${FEED_COLUMN_WIDTH / 2}px + 30px)` }}
-        >
+        <div className="absolute top-1/2 left-[calc(50%+261px)] -translate-y-1/2">
           <LikeButton liked={currentLiked} onToggle={onToggleCurrent} dark />
         </div>
       )}
